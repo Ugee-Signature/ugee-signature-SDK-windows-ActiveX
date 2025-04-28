@@ -1,0 +1,143 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Signature example</title>
+    <script type="text/javascript">
+        //get signature plugin object
+        function getCtlObject() {
+            return document.getElementById("SignViewer");
+        }
+
+        //Registration click event, used only for devices with display
+        //You can also register for more click events.
+        function regClickEvent() {
+            //clear button
+            getCtlObject().RegBtnClickEvent(1, 1016, 320, 120, 80);
+            //confirm button
+            getCtlObject().RegBtnClickEvent(2, 1010, 520, 120, 80);
+        }
+
+        //initialize  signature plugin
+        function initSignSetting() {
+            var ctl_obj = getCtlObject();
+            ctl_obj.SetPenSizeRange(1, 5);
+            ctl_obj.SetPenColor(255, 0, 0);
+            ctl_obj.BorderVisible = 0;
+            ctl_obj.DisplayMapMode = 1;
+
+            /*Reset the browser location and size */
+            var x = ctl_obj.GetScreenX();
+            var y = ctl_obj.GetScreenY();
+            var w = ctl_obj.GetScreenWidth();
+            var h = ctl_obj.GetScreenHeight();
+            if(w>0 && h>0){	
+				s=96/window.screen.deviceXDPI;
+				//s=window.screen.deviceYDPI;
+               	//s = window.screen.width / 1920;
+				window.moveTo(x*s,y*s);
+                window.resizeTo(w*s,h*s);
+				
+            }
+            //Registration click event
+            regClickEvent();
+        }
+		var s;
+		function resize() {
+		  s = 96/window.screen.deviceXDPI;
+		  document.body.style.transformOrigin = '0 0';
+		  document.body.style.transform = 'scale(' + s + ',' + s + ')';
+		  document.body.style.width = window.innerWidth / s + 'px';
+		  document.body.style.height = window.innerHeight / s + 'px';
+		}
+
+		window.onresize = function () {
+		  resize();
+		}
+
+        //clear  the Signature
+        function clearSign() {
+            getCtlObject().clearSign();
+        }
+
+        //click effect
+        function effectButtonClick(id) {
+            document.getElementById(id).disabled = "disabled";
+            setTimeout(function () {
+                document.getElementById(id).disabled = "";
+            }, 150);
+        }
+
+        //retrieves image base64 string about the widget
+        //SaveSignToBase64
+        //Parameters:
+        //  image width:
+        //  image height:
+        function getSignBase64() {
+
+            var w = getCtlObject().width
+            var h = getCtlObject().height;
+            var base64 = getCtlObject().SaveSignToBase64(w, h);
+            base64 = "data:image/png;base64," + base64;
+
+            var parentWin = window.opener;
+            var img_ret = parentWin.document.getElementById('img_sign');
+            var txtarea_ret = parentWin.document.getElementById('txtarea_sign_base64');
+            img_ret.src = base64;
+            txtarea_ret.value = base64;
+            window.close();
+        }
+
+    </script>
+	<script type="text/javascript" for="SignViewer" event="KeyEvent(PKeyCode, VKeyCode)" >
+		switch (VKeyCode) {
+            case 8: {	// 确认
+				document.getElementById("btn_confirm").onclick();
+            } break;
+            case 9: {	// 重签
+                effctButtonClick("btn_clear");
+                clearSign();
+            } break;
+			case 10: {	// 取消
+                effctButtonClick("btn_clear");
+                clearSign();
+            } break;
+        }
+	</script>
+    <script type="text/javascript" for="SignViewer" event="BtnClickEvent(nBtnIndex)">
+        switch (nBtnIndex) {
+            case 1: {
+                effectButtonClick("btn_clear");
+                document.getElementById("btn_clear").onclick();
+               
+            } break;
+            case 2: {
+                effectButtonClick("btn_confirm");
+                document.getElementById("btn_confirm").onclick();
+
+            } break;
+        }
+    </script>
+
+    <script type="text/javascript" for="SignViewer" event="DevNotifyEvent(state)">
+        if (state != 0) {
+            updateDeviceState(true);
+        }
+        else {
+            updateDeviceState(false);
+        }
+    </script>
+</head>
+
+<body onload="initSignSetting()" style="background-color:#f2f3f2">
+    <br /><br />
+    <div style="position:absolute;margin-left:300px;margin-right:auto;font-family:Arial;font-size:48px">
+        Please sign your name
+    </div>
+    <br />
+    <object id="SignViewer" name="SignViewer" border="1" style="position:absolute;margin-left:250px;margin-top:120px;border-color:deepskyblue;"
+            classid="CLSID:5E845176-C3D3-4A79-92D7-CD38F1112621" width="600" height="375"></object>
+    <input type="button" id="btn_clear" value="Clear" style="position:absolute;margin-left:1000px;margin-top:180px;width:120px;height:80px;font-size:24px;" onclick="clearSign()" />
+    <input type="button" id="btn_confirm" value="Confirm" style="position:absolute;margin-left:1000px;margin-top:380px;width:120px;height:80px;font-size:24px" onclick="getSignBase64()" />
+</body>
+</html>

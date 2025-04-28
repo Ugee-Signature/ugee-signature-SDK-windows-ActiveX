@@ -1,0 +1,15 @@
+If there are running programs or active web pages that use this ActiveX control, please exit the programs or the pages.
+
+Method 1: Run SignViewer_Setup_x.x.x.exe program. It will automatically register the OCX. Note: system may detect potential security risk and popup a warning message. Just clock OK to allow the operation to continue.
+
+Method 2: Right-click RegOCX.bat file and select "Run as administrator" option to execute the batch file. At the end if it gives no error, the registration is finished and successful.
+
+
+Chinese instructions below:
+方式一：
+	1、如存在相关程序或网页调用了插件，请先关闭相关页面或退出程序。
+	2、打开SignViewer_Setup_x.x.x.exe安装程序，程序安装时自动注册控件，注(安装注册时安全软件可能会出现拦截写注册表操作，设置允许通过即可）。
+
+方式二：
+	1、如存在相关程序或网页调用了插件，请先关闭相关页面或退出程序。
+	2、右键“以管理员身份运行”运行RegOCX.bat文件，命令行提示拷贝文件成功并且注册完成则表示控件注册成功。

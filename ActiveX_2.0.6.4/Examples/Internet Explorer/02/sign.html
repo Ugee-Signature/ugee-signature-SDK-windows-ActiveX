@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Signature example</title>
+    <script type="text/javascript">
+        //get signature plugin object
+        function getCtlObject() {
+            return document.getElementById("SignViewer");
+        }
+
+        //initialize  signature plugin
+        function initSignSetting() {
+            var ctl_obj = getCtlObject();
+            ctl_obj.SetPenSizeRange(1, 4);
+            ctl_obj.SetPenColor(255, 0, 0);
+            ctl_obj.BorderVisible = 0;
+            ctl_obj.DisplayMapMode = 1;
+
+            //Gets the connection state of the device.
+            updateDeviceState(ctl_obj.IsConnected());
+        }
+
+        //
+        function updateDeviceState(state) {
+            var img_state = document.getElementById("img_device_state");
+            if (state) {
+                //the device is connected
+                img_state.src = "./pen02.png";
+            } else {
+                img_state.src = "./pen01.png";
+            }
+        }
+
+        //clear  the Signature
+        function clearSign() {
+            getCtlObject().clearSign();
+        }
+
+        //retrieves image base64 string about the widget
+        //SaveSignToBase64
+        //Parameters:
+        //  image width:
+        //  image height:
+        function getSignBase64() {
+            var w = getCtlObject().width
+            var h = getCtlObject().height;
+            var base64 = getCtlObject().SaveSignToBase64(w, h);
+            base64 = "data:image/png;base64," + base64;
+
+            var parentWin = window.opener;
+            var img_ret = parentWin.document.getElementById('img_sign');
+            img_ret.src = base64;
+            window.close();
+        }
+
+    </script>
+
+	<script type="text/javascript" for="SignViewer" event="KeyEvent(PKeyCode, VKeyCode)" >
+		switch (VKeyCode) {
+            case 8: {	// 确认
+				document.getElementById("btn_confirm").onclick();
+            } break;
+            case 9: {	// 重签
+                clearSign();
+            } break;
+			case 10: {	// 取消
+                clearSign();
+            } break;
+        }
+	</script>
+	
+    <script type="text/javascript" for="SignViewer" event="DevNotifyEvent(state)">
+        if (state != 0) {
+            updateDeviceState(true);
+        }
+        else {
+            updateDeviceState(false);
+        }
+    </script>
+
+</head>
+
+<body onload="initSignSetting()" style="background-color:#f2f3f2">
+    <br />
+    <div style="margin-left:auto;margin-right:auto;text-align:center;font-family:Arial;font-size:24px">
+        Signature Widget
+        <img id="img_device_state" src="./pen01.png" style="position:absolute;width:36px;height:36px;" />
+    </div>
+    <br />
+    <div style="text-align:center">
+        <object id="SignViewer" name="SignViewer" border="1" align="center" style="border-color:deepskyblue;" classid="CLSID:5E845176-C3D3-4A79-92D7-CD38F1112621" width="605" height="385"></object>
+    </div>
+
+    <div >
+        <input type="button" id="btn_clear" value="Clear" style="position:absolute;margin-left:140px;margin-top:20px;width:120px;height:60px;font-size:24px;" onclick="clearSign()" />
+        <input type="button" id="btn_confirm" value="Confirm" style="position:absolute;margin-left:365px;margin-top:20px;width:120px;height:60px;font-size:24px" onclick="getSignBase64()" />
+    </div>
+</body>
+</html>

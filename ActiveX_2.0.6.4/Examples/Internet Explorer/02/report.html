@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Report example</title>
+    <script type="text/javascript">
+
+        //clear  the Signature
+        function clearSign() {
+          
+        }
+
+        function beginSign() {
+           window.open("./sign.html", "sign", "left=" + ((screen.width - 640) / 2) +",top="+ ((screen.height-560)/2)+",width=640,height=560,modal=1,dialog=1,toolbar=no, menubar=no, scrollbars=no,resizable=no,toolbar=no, location=no, status=no");
+        }
+
+    </script>
+
+    <style>
+        table {
+            margin-top: 15px;
+            border-collapse: collapse;
+            border: 1px solid #aaa;
+           
+        }
+
+        th {
+            vertical-align: baseline;
+            padding: 5px 15px 5px 6px;
+            background-color: #3F3F3F;
+            border: 1px solid #3F3F3F;
+            text-align: left;
+            color: #fff;
+        }
+        td {
+            vertical-align: text-top;
+            padding: 6px 15px 6px 6px;
+            border: 1px solid #aaa;
+        }
+    </style>
+
+</head>
+<body style="background-color:#f2f3f2">
+   <table style="text-align:left;border-left:1px solid;border-top:1px solid;border-right:1px solid;border-bottom:1px solid;border-color:deepskyblue;width:607px;background-color:white" align="center"">
+       <tr>
+           <td width="120">Name:</td>
+           <td>Jun</td>
+       </tr>
+       <tr>
+           <td>Sex:</td>
+           <td>M</td>
+       </tr>
+       <tr>
+           <td>Age:</td>
+           <td>26</td>
+       </tr>
+       <tr>
+           <td>Email:</td>
+           <td>zj@ugee.com.cn</td>
+       </tr>
+       <tr>
+           <td>Sign:</td>
+           <td >
+               <img id="img_sign" src="./sign_nothing.png" width="240px" height="120px" />
+               <input type="button" style="position:absolute;margin-left:150px;margin-top:100px" value="Sign"  onclick="beginSign()"/>
+           </td>
+       </tr>
+
+   </table>
+</body>
+</html>

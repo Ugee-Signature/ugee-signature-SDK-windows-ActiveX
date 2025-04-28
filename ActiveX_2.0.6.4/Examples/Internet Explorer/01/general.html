@@ -1,0 +1,390 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>General signature example</title>
+    <script type="text/javascript">
+
+        //get signature plugin object
+        function getCtlObject() {
+            return document.getElementById("SignViewer");
+        }
+
+        //Registration click event, used only for devices with display
+        //You can also register for more click events.
+        function regClickEvent() {
+            //clear button
+			
+			getCtlObject().GetScreenRect
+			var o = document.getElementById("btn_clear")
+            getCtlObject().RegBtnClickEvent(1,1045 ,293, 120, 60);
+			var p = document.getElementById("btn_confirm")
+            getCtlObject().RegBtnClickEvent(2,1045,465, 120, 60);
+        }
+
+        //initialize  signature plugin
+        function initSignSetting() {
+            var ctl_obj = getCtlObject();
+            //ctl_obj.SetPenSizeRange(1, 4);
+            //ctl_obj.SetPenColor(255, 0, 0);
+            ctl_obj.BorderVisible = 0;
+            //ctl_obj.DisplayMapMode = 1;
+
+            //make pen size value
+            var select_pen_size = document.getElementById("select_pen_size");
+            for (var i = 1; i <= 8; i++) {
+                select_pen_size.options.add(new Option(i, "pen_size" + i, false, i == 4 ? true : false));
+            }
+            updatePenSizeRange(select_pen_size);
+            updatePenColor(document.getElementById("label_pen_color_result"));
+            updateMapMode(document.getElementById("select_map_mode"));
+
+            //Registration click event
+            regClickEvent();
+
+            //Gets the connection state of the device.
+            updateDeviceState(ctl_obj.IsConnected());
+
+        }
+
+        //update the pen size
+        function updatePenSizeRange(ele) {
+            var index = ele.selectedIndex;
+            var max = ele.options[index].text;
+            getCtlObject().SetPenSizeRange(1, parseInt(max));
+        }
+
+        //update the pen color
+        function updatePenColor(ele) {
+
+            switch (ele.style.backgroundColor) {
+                case "black": {
+                    getCtlObject().SetPenColor(0, 0, 0);
+                }
+                    break;
+                case "red": {
+                    getCtlObject().SetPenColor(255, 0, 0);
+                }
+                    break;
+                case "green": {
+                    getCtlObject().SetPenColor(0, 255, 0);
+                }
+                    break;
+                case "blue": {
+                    getCtlObject().SetPenColor(0, 0, 255);
+                }
+                    break;
+            }
+
+            document.getElementById("label_pen_color_result").style.backgroundColor = ele.style.backgroundColor;
+        }
+
+        //update the display map node,    screen:0/widget:1
+        //In general, when the device has a display feature, use the screen mode. Otherwise, recommended to use widget mode.
+        function updateMapMode(ele) {
+            var index = ele.selectedIndex;
+            var mode = ele.options[index].text;
+            if (mode == "screen") {
+                getCtlObject().DisplayMapMode = 0;
+            }
+            else {
+                getCtlObject().DisplayMapMode = 1;
+            }
+        }
+
+        //set pen mode, pen:0/eraser:1
+        function updatePenMode(ele) {
+            var index = ele.selectedIndex;
+            var mode = ele.options[index].text;
+            if (mode == "pen") {
+                getCtlObject().SetPenMode(0);
+            }
+            else {
+                getCtlObject().SetPenMode(1);
+            }
+        }
+
+        //set sign mode,pen:0/touch:1/both:2
+        function updateSignMode(ele) {
+            var index = ele.selectedIndex;
+            var mode = ele.options[index].text;
+            var value = 0;
+            switch (mode) {
+                case "digital pen": {
+                    value = 0;
+                }
+                    break;
+                case "touch": {
+                    value = 1;
+                }
+                    break;
+                case "both": {
+                    value = 2;
+                }
+                    break;
+            }
+            getCtlObject().SignMode = value;
+        }
+
+        //rotate the device to 90 degrees
+        function updateDeviceRotation(ele) {
+            var index = ele.selectedIndex;
+            var angle = ele.options[index].text;
+            getCtlObject().SetScreenRotation(parseInt(angle));
+        }
+
+        //use a digital pen to simulate a computer mouse
+        function updateMouseControl(ele) {
+            var value = ele.checked ? 1 : 0;
+            getCtlObject().MouseControl(value);
+        }
+
+        //use the extended display mode
+        function updateExtendDisplay(ele) {
+            var value = ele.checked ? 1 : 0;
+            getCtlObject().ExtendDisplay = value;
+        }
+
+        //whether the cursor is visible
+        function updateCursorVisible(ele) {
+            getCtlObject().CursorVisible = ele.checked;
+        }
+
+        function updateEnableSign(ele) {
+            getCtlObject().EnableSign(ele.checked);
+        }
+
+        //
+        function updateDeviceState(state) {
+            var img_state = document.getElementById("img_device_state");
+            if (state) {
+                //the device is connected
+                img_state.src = "./pen02.png";
+            } else {
+                img_state.src = "./pen01.png";
+            }
+        }
+
+        //clear  the Signature
+        function clearSign() {
+            getCtlObject().clearSign();
+        }
+
+        //click effct
+        function effctButtonClick(id) {
+            document.getElementById(id).disabled = "disabled";
+            setTimeout(function () {
+                document.getElementById(id).disabled = "";
+            }, 150);
+        }
+
+        //retrieves image base64 string about the widget
+        //SaveSignToBase64
+        //Parameters:
+        //  image width:
+        //  image height:
+        function getSignBase64() {
+
+            if (getCtlObject().IsOperated() === false) {
+                alert("未检测到任何笔迹");
+                return;
+            }
+
+            var w = getCtlObject().width
+            var h = getCtlObject().height;
+            var base64 = getCtlObject().SaveSignToBase64(w, h);
+            base64 = "data:image/png;base64," + base64;
+
+            //you can submit the base64 string to your serivce
+            var new_html = window.open("", "width=1140,height=780,modal=1,dialog=1,toolbar=no, menubar=no, scrollbars=no,resizable=no,toolbar=no, location=no, status=no");
+            var code_text = "<img src=" + base64 + " width='" + w + "' height='" + h + "'/>";
+            new_html.document.write(code_text);
+        }
+
+    </script>
+
+	<script type="text/javascript" for="SignViewer" event="KeyEvent(PKeyCode, VKeyCode)" >
+		switch (VKeyCode) {
+            case 8: {	// 确认
+				effctButtonClick("btn_confirm");
+				getSignBase64();	//低版本IE不支持image直接设置为base64
+            } break;
+            case 9: {	// 重签
+                effctButtonClick("btn_clear");
+                clearSign();
+            } break;
+			case 10: {	// 取消
+                effctButtonClick("btn_clear");
+                clearSign();
+            } break;
+        }
+	</script>
+	
+    <script type="text/javascript" for="SignViewer" event="BtnClickEvent(nBtnIndex)">
+        switch (nBtnIndex) {
+            case 1: {
+                effctButtonClick("btn_clear");
+                clearSign();
+            }
+                break;
+            case 2: {
+                document.getElementById("btn_confirm").onclick();
+            }
+                break;
+        }
+    </script>
+
+    <script type="text/javascript" for="SignViewer" event="DevNotifyEvent(state)">
+        if (state != 0) {
+            updateDeviceState(true);
+        }
+        else {
+            updateDeviceState(false);
+        }
+    </script>
+
+</head>
+<body onload="initSignSetting()" style="background-color:#f2f3f2">
+<br/>
+<div style="margin-left:auto;margin-right:auto;text-align:center;font-family:Arial;font-size:24px">
+    Signature Widget
+    <img id="img_device_state" src="./pen01.png" style="position:absolute;width:36px;height:36px;"/>
+</div>
+<br/>
+<div style="text-align:center">
+    <object id="SignViewer" name="SignViewer" border="1" align="center" style="border-color:deepskyblue;"
+            classid="CLSID:5E845176-C3D3-4A79-92D7-CD38F1112621" width="605" height="385"></object>
+    <input type="button" id="btn_clear" value="Clear"
+           style="position:absolute;margin-left:24px;margin-top:80px;width:120px;height:60px;font-size:24px;"
+           onclick="clearSign()"/>
+    <input type="button" id="btn_confirm" value="Confirm"
+           style="position:absolute;margin-left:24px;margin-top:220px;width:120px;height:60px;font-size:24px"
+           onclick="getSignBase64()"/>
+</div>
+<br/>
+<table style="text-align:left;border-left:1px solid;border-top:1px solid;border-right:1px solid;border-bottom:1px solid;border-color:deepskyblue;width:607px;background-color:white"
+       align="center">
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            PenSizeRange:
+        <td>
+            <select id="select_pen_size" size="1" style="width:88px" onchange="updatePenSizeRange(this)"></select>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            PenColor:
+        </td>
+        <td>
+            <label id="label_pen_color_result" style="background-color:red;">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </label>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label id="label_pen_color_black" style="background-color:black;" onclick="updatePenColor(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <label id="label_pen_color_red" style="background-color:red;" onclick="updatePenColor(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <label id="label_pen_color_green" style="background-color:green;" onclick="updatePenColor(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <label id="label_pen_color_blue" style="background-color:blue;" onclick="updatePenColor(this)">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            DisplayMapMode:
+        </td>
+        <td>
+            <select id="select_map_mode" size="1" style="width:88px" onchange="updateMapMode(this)">
+                <option selected="selected">screen</option>
+                <option>widget</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            PenMode:
+        </td>
+        <td>
+            <select id="select_pen_mode" size="1" style="width:88px" onchange="updatePenMode(this)">
+                <option selected="selected">pen</option>
+                <option>eraser</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            SignMode:
+        </td>
+        <td>
+            <select id="select_sign_mode" size="1" style="width:88px" onchange="updateSignMode(this)">
+                <option selected="selected">digital pen</option>
+                <option>touch</option>
+                <option>both</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            DeviceRotation:
+        </td>
+        <td>
+            <select id="select_device_rotation" size="1" style="width:88px" onchange="updateDeviceRotation(this)">
+                <option selected="selected">0</option>
+                <option>90</option>
+                <option>180</option>
+                <option>270</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            MouseControl:
+        </td>
+        <td>
+            <input type="checkbox" id="check_mouse_control" onchange="updateMouseControl(this)"/>
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            ExtendDisplay:
+        </td>
+        <td>
+            <input type="checkbox" id="check_extend_display" onchange="updateExtendDisplay(this)"/>
+            (Used only for devices with display)
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            CursorVisible:
+        </td>
+        <td>
+            <input type="checkbox" checked="checked" id="check_cursor_visible" onchange="updateCursorVisible(this)"/>
+            (Whether the cursor is visible)
+        </td>
+    </tr>
+
+    <tr>
+        <td style="width:160px; color: dodgerblue;">
+            EnableSign:
+        </td>
+        <td>
+            <input type="checkbox" checked="checked" id="check_enable_sign" onchange="updateEnableSign(this)"/>
+        </td>
+    </tr>
+
+</table>
+<table align="center">
+    <tr>
+        <td style="width:275px;height:120px;text-align:center"></td>
+        <td style="width:275px;height:120px;text-align:center"></td>
+        <td></td>
+    </tr>
+</table>
+</body>
+</html>

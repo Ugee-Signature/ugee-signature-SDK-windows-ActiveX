@@ -1,0 +1,6 @@
+After unzipping the compressed package, open the Plugins file to register the OCX control.
+Operation method:
+Double-click the left mouse button to install SignViewer_Setup_2.0.6.2.exe
+Or
+Right-click the mouse to run RegOCX.bat as administrator
+Run the demo after the registration is completed
